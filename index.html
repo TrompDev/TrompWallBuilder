@@ -25,14 +25,14 @@
         function onLoad() {
             TelegramGameProxy.initParams();
         }
-
+    
         window.onload = onLoad;
-
+    
         // Function to send score back to Telegram
         function sendScore(score) {
             TelegramGameProxy.setScore(score);
         }
-
+    
         // Modify your existing code to call sendScore when appropriate
         // For example, you might call it whenever bricksBuilt changes:
         function updateCounters() {
