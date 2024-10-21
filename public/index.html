@@ -6,7 +6,6 @@
     <title>Tromp Wall Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/games.js"></script>
 </head>
 <body>
     <div class="cloud"></div>
@@ -21,23 +20,18 @@
     <div id="click-info"></div>
     
     <script src="script.js"></script>
+    <script src="https://telegram.org/js/games.js"></script>
     <script>
-        function onLoad() {
-            TelegramGameProxy.initParams();
-        }
-    
-        window.onload = onLoad;
-    
-        // Function to send score back to Telegram
         function sendScore(score) {
-            TelegramGameProxy.setScore(score);
+            if (window.TelegramGameProxy) {
+                TelegramGameProxy.setScore(score);
+            } else {
+                console.log('Score updated:', score);
+            }
         }
-    
-        // Modify your existing code to call sendScore when appropriate
-        // For example, you might call it whenever bricksBuilt changes:
-        function updateCounters() {
-            document.getElementById('bricks-built').textContent = `Bricks Built: ${bricksBuilt} | Bricks Removed: ${bricksRemoved} | Add Clicks: ${addClickCount} | Remove Clicks: ${removeClickCount}`;
-            sendScore(bricksBuilt - bricksRemoved);
+
+        if (window.TelegramGameProxy) {
+            TelegramGameProxy.initParams();
         }
     </script>
 </body>

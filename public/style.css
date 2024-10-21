@@ -159,13 +159,13 @@ body, html {
 }
 
 .brick {
-    width: 64px;  /* Increased from 60px to account for the removed horizontal margin */
-    height: 34px; /* Increased from 30px to account for the removed vertical margin */
-    margin: 0;    /* Removed margin to make bricks touch */
+    width: 64px;
+    height: 34px;
+    margin: 0;
     background-color: #c0392b;
     transition: all 0.3s ease-out;
-    opacity: 0;
-    transform: scale(0);
+    opacity: 1; /* Changed from 0 to 1 */
+    transform: scale(1); /* Changed from scale(0) to scale(1) */
     position: relative;
     border: 2px solid #7f2820;
     box-shadow: 
@@ -199,13 +199,23 @@ body, html {
 }
 
 .brick.show {
-    opacity: 1;
-    transform: scale(1);
+    animation: showBrick 0.3s ease-out;
 }
 
 .brick.remove {
     opacity: 0;
     transform: scale(0);
+}
+
+@keyframes showBrick {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 #bricks-built, #click-info {
