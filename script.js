@@ -2,27 +2,43 @@ let bricksBuilt = 0;
 let bricksRemoved = 0;
 let addClickCount = 0;
 let removeClickCount = 0;
-const maxBricksPerLine = Math.floor(document.querySelector('.brick-area').clientWidth / 64); // Now exactly 64px width
+const maxBricksPerLine = Math.floor(document.querySelector('.brick-area').clientWidth / 64);
+const initialBricks = 100;
 
-document.getElementById('republicans').addEventListener('click', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    initializeGame();
+    document.getElementById('republicans').addEventListener('click', handleRepublicanClick);
+    document.getElementById('democrats').addEventListener('click', handleDemocratClick);
+});
+
+function initializeGame() {
+    const area = document.querySelector('.brick-area');
+    for (let i = 0; i < initialBricks; i++) {
+        addBrick(false);
+    }
+    scrollToBottom(area);
+    updateCounters();
+}
+
+function handleRepublicanClick() {
     addClickCount++;
     if (addClickCount % 10 === 0) {
-        addBrick();
+        addBrick(true);
     }
     updateCounters();
     animateButton(this);
-});
+}
 
-document.getElementById('democrats').addEventListener('click', function() {
+function handleDemocratClick() {
     removeClickCount++;
     if (removeClickCount % 10 === 0) {
-        removeBrick();
+        removeBrick(true);
     }
     updateCounters();
     animateButton(this);
-});
+}
 
-function addBrick() {
+function addBrick(countTowardsTotal = true) {
     const area = document.querySelector('.brick-area');
     let currentLine = area.lastElementChild;
 
@@ -37,39 +53,39 @@ function addBrick() {
     brick.classList.add('brick');
     currentLine.appendChild(brick);
 
-    // Trigger reflow
-    brick.offsetWidth;
-
-    // Add the 'show' class to trigger the animation
+    brick.offsetWidth; // Trigger reflow
     brick.classList.add('show');
 
-    bricksBuilt++;
-    updateCounters();
+    if (countTowardsTotal) {
+        bricksBuilt++;
+        updateCounters();
+    }
+    
+    scrollToBottom(area);
 }
 
-function removeBrick() {
+function removeBrick(countTowardsTotal = true) {
     const area = document.querySelector('.brick-area');
     let lastLine = area.lastElementChild;
 
     if (lastLine) {
         const lastBrick = lastLine.lastElementChild;
         if (lastBrick) {
-            // Add the 'remove' class to trigger the removal animation
             lastBrick.classList.add('remove');
-
-            // Wait for the animation to complete before removing the brick
             lastBrick.addEventListener('transitionend', function() {
                 lastLine.removeChild(lastBrick);
-                bricksRemoved++;
-
+                if (countTowardsTotal) {
+                    bricksRemoved++;
+                    updateCounters();
+                }
                 if (lastLine.childElementCount === 0) {
                     area.removeChild(lastLine);
                 }
-
-                updateCounters();
             }, { once: true });
         }
     }
+    
+    scrollToBottom(area);
 }
 
 function updateCounters() {
@@ -78,22 +94,21 @@ function updateCounters() {
 
 function animateButton(button) {
     button.classList.add('clicked');
-    setTimeout(() => {
-        button.classList.remove('clicked');
-    }, 100);
+    setTimeout(() => button.classList.remove('clicked'), 100);
 }
 
 function automaticBrickAction() {
     if (Math.random() < 0.5) {
-        addBrick();
+        addBrick(true);
     } else {
-        removeBrick();
+        removeBrick(true);
     }
 }
 
-// Start the automatic brick addition/removal process
+function scrollToBottom(element) {
+    element.scrollTop = element.scrollHeight;
+}
+
 setInterval(automaticBrickAction, 10000);
 
-// Initialize counters and info text
-updateCounters();
 document.getElementById('click-info').textContent = 'A brick is added or removed every 10 clicks of the respective button. Every 10 seconds, a brick is automatically added or removed.';
